@@ -7,6 +7,8 @@ import PropTypes from "prop-types"
 import React from "react"
 import { MAP } from "./constants"
 
+import MapContext from "./utils/MapContext"
+
 export function withGoogleMap(BaseComponent) {
   const factory = React.createFactory(BaseComponent)
 
@@ -18,21 +20,11 @@ export function withGoogleMap(BaseComponent) {
       mapElement: PropTypes.node.isRequired,
     }
 
-    static childContextTypes = {
-      [MAP]: PropTypes.object,
-    }
-
     state = {
       map: null,
     }
 
     handleComponentMount = _.bind(this.handleComponentMount, this)
-
-    getChildContext() {
-      return {
-        [MAP]: this.state.map,
-      }
-    }
 
     componentWillMount() {
       const { containerElement, mapElement } = this.props
@@ -60,13 +52,19 @@ export function withGoogleMap(BaseComponent) {
       this.setState({ map })
     }
 
+    componentDidCatch(err) {
+      console.log(err)
+    }
+
     render() {
       const { containerElement, mapElement, ...restProps } = this.props
 
       const { map } = this.state
 
+      let mapContent
+
       if (map) {
-        return React.cloneElement(
+        mapContent = React.cloneElement(
           containerElement,
           {},
           React.cloneElement(mapElement, {
@@ -75,7 +73,7 @@ export function withGoogleMap(BaseComponent) {
           <div>{factory(restProps)}</div>
         )
       } else {
-        return React.cloneElement(
+        mapContent = React.cloneElement(
           containerElement,
           {},
           React.cloneElement(mapElement, {
@@ -84,6 +82,16 @@ export function withGoogleMap(BaseComponent) {
           <div />
         )
       }
+
+      return (
+        <MapContext.Provider
+          value={{
+            [MAP]: this.state.map,
+          }}
+        >
+          {mapContent}
+        </MapContext.Provider>
+      )
     }
   }
 

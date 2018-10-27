@@ -8,6 +8,7 @@ import {
   componentDidUpdate,
   componentWillUnmount,
 } from "../utils/MapChildHelper"
+import MapContext from "../utils/MapContext"
 
 import { MAP, MARKER, ANCHOR, MARKER_CLUSTERER } from "../constants"
 
@@ -30,7 +31,7 @@ export const __jscodeshiftPlaceholder__ = `{
  *
  * @see https://developers.google.com/maps/documentation/javascript/3.exp/reference#Marker
  */
-export class Marker extends React.PureComponent {
+export default class Marker extends React.PureComponent {
   static propTypes = {
     __jscodeshiftPlaceholder__: null,
     /**
@@ -40,20 +41,20 @@ export class Marker extends React.PureComponent {
     noRedraw: PropTypes.bool,
   }
 
-  static contextTypes = {
-    [MAP]: PropTypes.object,
-    [MARKER_CLUSTERER]: PropTypes.object,
-  }
+  static contextType = MapContext
 
-  static childContextTypes = {
-    [ANCHOR]: PropTypes.object,
-  }
-
-  /*
+  /* ̰
    * @see https://developers.google.com/maps/documentation/javascript/3.exp/reference#Marker
    */
-  constructor(props, context) {
-    super(props, context)
+  constructor(props) {
+    super(props)
+
+    this.state = {
+      [MARKER]: null,
+    }
+  }
+
+  componentDidMount() {
     const marker = new google.maps.Marker()
     construct(Marker.propTypes, updaterMap, this.props, marker)
     const markerClusterer = this.context[MARKER_CLUSTERER]
@@ -62,19 +63,7 @@ export class Marker extends React.PureComponent {
     } else {
       marker.setMap(this.context[MAP])
     }
-    this.state = {
-      [MARKER]: marker,
-    }
-  }
-
-  getChildContext() {
-    return {
-      [ANCHOR]: this.context[ANCHOR] || this.state[MARKER],
-    }
-  }
-
-  componentDidMount() {
-    componentDidMount(this, this.state[MARKER], eventMap)
+    componentDidMount(this, marker, eventMap)
   }
 
   componentDidUpdate(prevProps) {
@@ -104,8 +93,6 @@ export class Marker extends React.PureComponent {
     return <div>{children}</div>
   }
 }
-
-export default Marker
 
 const eventMap = {}
 

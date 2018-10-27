@@ -10,6 +10,7 @@ import {
 } from "../utils/MapChildHelper"
 
 import { MAP } from "../constants"
+import MapContext from "../utils/MapContext"
 
 export const __jscodeshiftPlaceholder__ = `{
   "eventMapOverrides": {
@@ -31,7 +32,7 @@ export const __jscodeshiftPlaceholder__ = `{
  *
  * @see https://developers.google.com/maps/documentation/javascript/3.exp/reference#Map
  */
-export class Map extends React.PureComponent {
+export default class Map extends React.PureComponent {
   static displayName = "GoogleMap"
 
   static propTypes = {
@@ -44,13 +45,9 @@ export class Map extends React.PureComponent {
     defaultExtraMapTypes: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.any)),
   }
 
-  static contextTypes = {
-    [MAP]: PropTypes.object,
-  }
-
   /**
    * @see https://developers.google.com/maps/documentation/javascript/3.exp/reference#Map
-   * @public 
+   * @public
    */
   fitBounds(...args) {
     return this.context[MAP].fitBounds(...args)
@@ -58,7 +55,7 @@ export class Map extends React.PureComponent {
 
   /**
    * @see https://developers.google.com/maps/documentation/javascript/3.exp/reference#Map
-   * @public 
+   * @public
    */
   panBy(...args) {
     return this.context[MAP].panBy(...args)
@@ -66,7 +63,7 @@ export class Map extends React.PureComponent {
 
   /**
    * @see https://developers.google.com/maps/documentation/javascript/3.exp/reference#Map
-   * @public 
+   * @public
    */
   panTo(...args) {
     return this.context[MAP].panTo(...args)
@@ -74,7 +71,7 @@ export class Map extends React.PureComponent {
 
   /**
    * @see https://developers.google.com/maps/documentation/javascript/3.exp/reference#Map
-   * @public 
+   * @public
    */
   panToBounds(...args) {
     return this.context[MAP].panToBounds(...args)
@@ -83,16 +80,17 @@ export class Map extends React.PureComponent {
   /*
    * @see https://developers.google.com/maps/documentation/javascript/3.exp/reference#Map
    */
-  constructor(props, context) {
-    super(props, context)
-    invariant(
-      !!this.context[MAP],
-      `Did you wrap <GoogleMap> component with withGoogleMap() HOC?`
-    )
-    construct(GoogleMap.propTypes, updaterMap, this.props, this.context[MAP])
+  constructor(props) {
+    super(props)
+
+    // invariant(
+    //   !!this.context[MAP],
+    //   `Did you wrap <GoogleMap> component with withGoogleMap() HOC?`
+    // )
   }
 
   componentDidMount() {
+    construct(GoogleMap.propTypes, updaterMap, this.props, this.context[MAP])
     componentDidMount(this, this.context[MAP], eventMap)
   }
 
@@ -110,14 +108,18 @@ export class Map extends React.PureComponent {
   }
 }
 
-export const GoogleMap = Map
+Map.contextType = MapContext
 
-export default Map
+export const GoogleMap = Map
 
 const eventMap = {}
 
 const updaterMap = {
   extraMapTypes(instance, extra) {
-    extra.forEach(it => instance.mapTypes.set(...it))
+    console.log(instance, extra)
+    extra.forEach(it => {
+      console.log(it)
+      instance.mapTypes.set(...it)
+    })
   },
 }
