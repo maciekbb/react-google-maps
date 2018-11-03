@@ -52,10 +52,6 @@ export function withGoogleMap(BaseComponent) {
       this.setState({ map })
     }
 
-    componentDidCatch(err) {
-      console.log(err)
-    }
-
     render() {
       const { containerElement, mapElement, ...restProps } = this.props
 
