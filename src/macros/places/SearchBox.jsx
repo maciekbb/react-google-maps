@@ -26,7 +26,7 @@ export const __jscodeshiftPlaceholder__ = `{
  *
  * @see https://developers.google.com/maps/documentation/javascript/3.exp/reference#SearchBox
  */
-export class SearchBox extends React.PureComponent {
+export class _SearchBox extends React.PureComponent {
   static propTypes = {
     __jscodeshiftPlaceholder__: null,
     /**
@@ -161,6 +161,7 @@ export class SearchBox extends React.PureComponent {
     return false
   }
 }
+export const SearchBox = () => <div />
 
 export default () => <div />
 

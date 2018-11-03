@@ -84,7 +84,7 @@ export class StreetViewPanorama extends React.PureComponent {
   }
 }
 
-export default StreetViewPanorama
+export default () => <div />
 
 const eventMap = {}
 
