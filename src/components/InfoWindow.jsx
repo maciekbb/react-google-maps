@@ -187,7 +187,7 @@ export class InfoWindow extends React.PureComponent {
   }
 }
 
-export default InfoWindow
+export default () => <div />
 
 const open = (infoWindow, anchor) => {
   if (anchor) {

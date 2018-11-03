@@ -14,6 +14,7 @@ import {
   componentDidUpdate,
   componentWillUnmount,
 } from "../utils/MapChildHelper"
+import MapContext from "../utils/MapContext"
 
 import { MAP, MARKER, ANCHOR, MARKER_CLUSTERER } from "../constants"
 
@@ -22,7 +23,7 @@ import { MAP, MARKER, ANCHOR, MARKER_CLUSTERER } from "../constants"
  *
  * @see https://developers.google.com/maps/documentation/javascript/3.exp/reference#Marker
  */
-export class Marker extends React.PureComponent {
+export default class Marker extends React.PureComponent {
   static propTypes = {
     /**
      * For the 2nd argument of `MarkerCluster#addMarker`
@@ -276,20 +277,20 @@ export class Marker extends React.PureComponent {
     onZindexChanged: PropTypes.func,
   }
 
-  static contextTypes = {
-    [MAP]: PropTypes.object,
-    [MARKER_CLUSTERER]: PropTypes.object,
-  }
+  static contextType = MapContext
 
-  static childContextTypes = {
-    [ANCHOR]: PropTypes.object,
-  }
-
-  /*
+  /* ̰
    * @see https://developers.google.com/maps/documentation/javascript/3.exp/reference#Marker
    */
-  constructor(props, context) {
-    super(props, context)
+  constructor(props) {
+    super(props)
+
+    this.state = {
+      [MARKER]: null,
+    }
+  }
+
+  componentDidMount() {
     const marker = new google.maps.Marker()
     construct(Marker.propTypes, updaterMap, this.props, marker)
     const markerClusterer = this.context[MARKER_CLUSTERER]
@@ -298,19 +299,9 @@ export class Marker extends React.PureComponent {
     } else {
       marker.setMap(this.context[MAP])
     }
-    this.state = {
-      [MARKER]: marker,
-    }
-  }
 
-  getChildContext() {
-    return {
-      [ANCHOR]: this.context[ANCHOR] || this.state[MARKER],
-    }
-  }
-
-  componentDidMount() {
-    componentDidMount(this, this.state[MARKER], eventMap)
+    this.setState({ [MARKER]: marker })
+    componentDidMount(this, marker, eventMap)
   }
 
   componentDidUpdate(prevProps) {
@@ -457,8 +448,6 @@ export class Marker extends React.PureComponent {
     return this.state[MARKER].getZIndex()
   }
 }
-
-export default Marker
 
 const eventMap = {
   onDblClick: "dblclick",
