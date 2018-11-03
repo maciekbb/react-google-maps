@@ -8,6 +8,7 @@ import {
   componentDidUpdate,
   componentWillUnmount,
 } from "../utils/MapChildHelper"
+import MapContext from "../utils/MapContext"
 
 import { MAP, POLYGON } from "../constants"
 
@@ -36,25 +37,25 @@ export class Polygon extends React.PureComponent {
     __jscodeshiftPlaceholder__: null,
   }
 
-  static contextTypes = {
-    [MAP]: PropTypes.object,
-  }
+  static contextType = MapContext
 
   /*
    * @see https://developers.google.com/maps/documentation/javascript/3.exp/reference#Polygon
    */
-  constructor(props, context) {
-    super(props, context)
-    const polygon = new google.maps.Polygon()
-    construct(Polygon.propTypes, updaterMap, this.props, polygon)
-    polygon.setMap(this.context[MAP])
+  constructor(props) {
+    super(props)
+
     this.state = {
-      [POLYGON]: polygon,
+      [POLYGON]: null,
     }
   }
 
   componentDidMount() {
-    componentDidMount(this, this.state[POLYGON], eventMap)
+    const polygon = new google.maps.Polygon()
+    construct(Polygon.propTypes, updaterMap, this.props, polygon)
+    polygon.setMap(this.context[MAP])
+    componentDidMount(this, polygon, eventMap)
+    this.setState({ [POLYGON]: polygon })
   }
 
   componentDidUpdate(prevProps) {

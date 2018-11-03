@@ -8,6 +8,7 @@ import {
   componentDidUpdate,
   componentWillUnmount,
 } from "../utils/MapChildHelper"
+import MapContext from "../utils/MapContext"
 
 import { MAP, POLYLINE } from "../constants"
 
@@ -36,25 +37,25 @@ export class Polyline extends React.PureComponent {
     __jscodeshiftPlaceholder__: null,
   }
 
-  static contextTypes = {
-    [MAP]: PropTypes.object,
-  }
+  static contextType = MapContext
 
   /*
    * @see https://developers.google.com/maps/documentation/javascript/3.exp/reference#Polyline
    */
-  constructor(props, context) {
-    super(props, context)
-    const polyline = new google.maps.Polyline()
-    construct(Polyline.propTypes, updaterMap, this.props, polyline)
-    polyline.setMap(this.context[MAP])
+  constructor(props) {
+    super(props)
+
     this.state = {
-      [POLYLINE]: polyline,
+      [POLYLINE]: null,
     }
   }
 
   componentDidMount() {
-    componentDidMount(this, this.state[POLYLINE], eventMap)
+    const polyline = new google.maps.Polyline()
+    construct(Polyline.propTypes, updaterMap, this.props, polyline)
+    polyline.setMap(this.context[MAP])
+    componentDidMount(this, polyline, eventMap)
+    this.setState({ [POLYLINE]: polyline })
   }
 
   componentDidUpdate(prevProps) {

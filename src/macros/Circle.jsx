@@ -8,6 +8,7 @@ import {
   componentDidUpdate,
   componentWillUnmount,
 } from "../utils/MapChildHelper"
+import MapContext from "../utils/MapContext"
 
 import { MAP, CIRCLE } from "../constants"
 
@@ -36,25 +37,24 @@ export class Circle extends React.PureComponent {
     __jscodeshiftPlaceholder__: null,
   }
 
-  static contextTypes = {
-    [MAP]: PropTypes.object,
-  }
+  static contextType = MapContext
 
   /*
    * @see https://developers.google.com/maps/documentation/javascript/3.exp/reference#Circle
    */
-  constructor(props, context) {
-    super(props, context)
-    const circle = new google.maps.Circle()
-    construct(Circle.propTypes, updaterMap, this.props, circle)
-    circle.setMap(this.context[MAP])
+  constructor(props) {
+    super(props)
     this.state = {
-      [CIRCLE]: circle,
+      [CIRCLE]: null,
     }
   }
 
   componentDidMount() {
-    componentDidMount(this, this.state[CIRCLE], eventMap)
+    const circle = new google.maps.Circle()
+    construct(Circle.propTypes, updaterMap, this.props, circle)
+    circle.setMap(this.context[MAP])
+    componentDidMount(this, circle, eventMap)
+    this.setState({ [CIRCLE]: circle })
   }
 
   componentDidUpdate(prevProps) {

@@ -10,6 +10,7 @@ import {
   componentDidUpdate,
   componentWillUnmount,
 } from "../utils/MapChildHelper"
+import MapContext from "../utils/MapContext"
 
 import { getOffsetOverride, getLayoutStyles } from "../utils/OverlayViewHelper"
 
@@ -57,27 +58,18 @@ export class OverlayView extends React.PureComponent {
     getPixelPositionOffset: PropTypes.func,
   }
 
-  static contextTypes = {
-    [MAP]: PropTypes.object,
-    [ANCHOR]: PropTypes.object,
-  }
+  static contextType = MapContext
 
   /*
    * @see https://developers.google.com/maps/documentation/javascript/3.exp/reference#OverlayView
    */
-  constructor(props, context) {
-    super(props, context)
-    const overlayView = new google.maps.OverlayView()
-    // You must implement three methods: onAdd(), draw(), and onRemove().
-    overlayView.onAdd = _.bind(this.onAdd, this)
-    overlayView.draw = _.bind(this.draw, this)
-    overlayView.onRemove = _.bind(this.onRemove, this)
+  constructor(props) {
+    super(props)
+
     this.onPositionElement = _.bind(this.onPositionElement, this)
-    // You must call setMap() with a valid Map object to trigger the call to
-    // the onAdd() method and setMap(null) in order to trigger the onRemove() method.
-    overlayView.setMap(this.context[MAP])
+
     this.state = {
-      [OVERLAY_VIEW]: overlayView,
+      [OVERLAY_VIEW]: null,
     }
   }
 
@@ -138,7 +130,16 @@ export class OverlayView extends React.PureComponent {
   }
 
   componentDidMount() {
-    componentDidMount(this, this.state[OVERLAY_VIEW], eventMap)
+    const overlayView = new google.maps.OverlayView()
+    // You must implement three methods: onAdd(), draw(), and onRemove().
+    overlayView.onAdd = _.bind(this.onAdd, this)
+    overlayView.draw = _.bind(this.draw, this)
+    overlayView.onRemove = _.bind(this.onRemove, this)
+    // You must call setMap() with a valid Map object to trigger the call to
+    // the onAdd() method and setMap(null) in order to trigger the onRemove() method.
+    overlayView.setMap(this.context[MAP])
+    componentDidMount(this, overlayView, eventMap)
+    this.setState({ [OVERLAY_VIEW]: overlayView })
   }
 
   componentDidUpdate(prevProps) {

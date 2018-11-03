@@ -64,6 +64,7 @@ export default class Marker extends React.PureComponent {
       marker.setMap(this.context[MAP])
     }
     componentDidMount(this, marker, eventMap)
+    this.setState({ [MARKER]: marker })
   }
 
   componentDidUpdate(prevProps) {

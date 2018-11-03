@@ -8,6 +8,7 @@ import {
   componentDidUpdate,
   componentWillUnmount,
 } from "../utils/MapChildHelper"
+import MapContext from "../utils/MapContext"
 
 import { MAP, RECTANGLE } from "../constants"
 
@@ -36,25 +37,25 @@ export class Rectangle extends React.PureComponent {
     __jscodeshiftPlaceholder__: null,
   }
 
-  static contextTypes = {
-    [MAP]: PropTypes.object,
-  }
+  static contextType = MapContext
 
   /*
    * @see https://developers.google.com/maps/documentation/javascript/3.exp/reference#Rectangle
    */
-  constructor(props, context) {
-    super(props, context)
-    const rectangle = new google.maps.Rectangle()
-    construct(Rectangle.propTypes, updaterMap, this.props, rectangle)
-    rectangle.setMap(this.context[MAP])
+  constructor(props) {
+    super(props)
+
     this.state = {
-      [RECTANGLE]: rectangle,
+      [RECTANGLE]: null,
     }
   }
 
   componentDidMount() {
-    componentDidMount(this, this.state[RECTANGLE], eventMap)
+    const rectangle = new google.maps.Rectangle()
+    construct(Rectangle.propTypes, updaterMap, this.props, rectangle)
+    rectangle.setMap(this.context[MAP])
+    componentDidMount(this, rectangle, eventMap)
+    this.setState({ [RECTANGLE]: rectangle })
   }
 
   componentDidUpdate(prevProps) {
