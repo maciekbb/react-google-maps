@@ -15,6 +15,7 @@ import {
   componentDidUpdate,
   componentWillUnmount,
 } from "../../utils/MapChildHelper"
+import MapContext from "../../utils/MapContext"
 
 import { MAP, DRAWING_MANAGER } from "../../constants"
 
@@ -76,29 +77,29 @@ export class DrawingManager extends React.PureComponent {
     onRectangleComplete: PropTypes.func,
   }
 
-  static contextTypes = {
-    [MAP]: PropTypes.object,
-  }
+  static contextType = MapContext
 
   /*
    * @see https://developers.google.com/maps/documentation/javascript/3.exp/reference#DrawingManager
    */
-  constructor(props, context) {
-    super(props, context)
+  constructor(props) {
+    super(props)
     invariant(
       google.maps.drawing,
       `Did you include "libraries=drawing" in the URL?`
     )
-    const drawingManager = new google.maps.drawing.DrawingManager()
-    construct(DrawingManager.propTypes, updaterMap, this.props, drawingManager)
-    drawingManager.setMap(this.context[MAP])
+
     this.state = {
-      [DRAWING_MANAGER]: drawingManager,
+      [DRAWING_MANAGER]: null,
     }
   }
 
   componentDidMount() {
-    componentDidMount(this, this.state[DRAWING_MANAGER], eventMap)
+    const drawingManager = new google.maps.drawing.DrawingManager()
+    construct(DrawingManager.propTypes, updaterMap, this.props, drawingManager)
+    drawingManager.setMap(this.context[MAP])
+    componentDidMount(this, drawingManager, eventMap)
+    this.setState({ [DRAWING_MANAGER]: drawingManager })
   }
 
   componentDidUpdate(prevProps) {

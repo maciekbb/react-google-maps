@@ -4,6 +4,7 @@
  * Please **DO NOT** edit this file directly when creating PRs.
  * -----------------------------------------------------------------------------
  */
+import invariant from "invariant"
 import React from "react"
 import PropTypes from "prop-types"
 
@@ -16,65 +17,6 @@ import {
 
 import { MAP } from "../constants"
 import MapContext from "../utils/MapContext"
-
-const eventMap = {
-  onDblClick: "dblclick",
-  onDragEnd: "dragend",
-  onDragStart: "dragstart",
-  onMapTypeIdChanged: "maptypeid_changed",
-  onMouseMove: "mousemove",
-  onMouseOut: "mouseout",
-  onMouseOver: "mouseover",
-  onRightClick: "rightclick",
-  onTilesLoaded: "tilesloaded",
-  onBoundsChanged: "bounds_changed",
-  onCenterChanged: "center_changed",
-  onClick: "click",
-  onDrag: "drag",
-  onHeadingChanged: "heading_changed",
-  onIdle: "idle",
-  onProjectionChanged: "projection_changed",
-  onResize: "resize",
-  onTiltChanged: "tilt_changed",
-  onZoomChanged: "zoom_changed",
-}
-
-const updaterMap = {
-  extraMapTypes(instance, extra) {
-    extra.forEach(it => console.log({ it }) || instance.mapTypes.set(...it))
-  },
-  center(instance, center) {
-    instance.setCenter(center)
-  },
-
-  clickableIcons(instance, clickableIcons) {
-    instance.setClickableIcons(clickableIcons)
-  },
-
-  heading(instance, heading) {
-    instance.setHeading(heading)
-  },
-
-  mapTypeId(instance, mapTypeId) {
-    instance.setMapTypeId(mapTypeId)
-  },
-
-  options(instance, options) {
-    instance.setOptions(options)
-  },
-
-  streetView(instance, streetView) {
-    instance.setStreetView(streetView)
-  },
-
-  tilt(instance, tilt) {
-    instance.setTilt(tilt)
-  },
-
-  zoom(instance, zoom) {
-    instance.setZoom(zoom)
-  },
-}
 
 /**
  * A wrapper around `google.maps.Map`
@@ -302,6 +244,14 @@ export default class Map extends React.PureComponent {
   /*
    * @see https://developers.google.com/maps/documentation/javascript/3.exp/reference#Map
    */
+  constructor(props) {
+    super(props)
+
+    // invariant(
+    //   !!this.context[MAP],
+    //   `Did you wrap <GoogleMap> component with withGoogleMap() HOC?`
+    // )
+  }
 
   componentDidMount() {
     construct(GoogleMap.propTypes, updaterMap, this.props, this.context[MAP])
@@ -318,7 +268,6 @@ export default class Map extends React.PureComponent {
 
   render() {
     const { children } = this.props
-
     return <div>{children}</div>
   }
 
@@ -416,3 +365,67 @@ export default class Map extends React.PureComponent {
 Map.contextType = MapContext
 
 export const GoogleMap = Map
+
+const eventMap = {
+  onDblClick: "dblclick",
+  onDragEnd: "dragend",
+  onDragStart: "dragstart",
+  onMapTypeIdChanged: "maptypeid_changed",
+  onMouseMove: "mousemove",
+  onMouseOut: "mouseout",
+  onMouseOver: "mouseover",
+  onRightClick: "rightclick",
+  onTilesLoaded: "tilesloaded",
+  onBoundsChanged: "bounds_changed",
+  onCenterChanged: "center_changed",
+  onClick: "click",
+  onDrag: "drag",
+  onHeadingChanged: "heading_changed",
+  onIdle: "idle",
+  onProjectionChanged: "projection_changed",
+  onResize: "resize",
+  onTiltChanged: "tilt_changed",
+  onZoomChanged: "zoom_changed",
+}
+
+const updaterMap = {
+  extraMapTypes(instance, extra) {
+    console.log(instance, extra)
+    extra.forEach(it => {
+      console.log(it)
+      instance.mapTypes.set(...it)
+    })
+  },
+
+  center(instance, center) {
+    instance.setCenter(center)
+  },
+
+  clickableIcons(instance, clickableIcons) {
+    instance.setClickableIcons(clickableIcons)
+  },
+
+  heading(instance, heading) {
+    instance.setHeading(heading)
+  },
+
+  mapTypeId(instance, mapTypeId) {
+    instance.setMapTypeId(mapTypeId)
+  },
+
+  options(instance, options) {
+    instance.setOptions(options)
+  },
+
+  streetView(instance, streetView) {
+    instance.setStreetView(streetView)
+  },
+
+  tilt(instance, tilt) {
+    instance.setTilt(tilt)
+  },
+
+  zoom(instance, zoom) {
+    instance.setZoom(zoom)
+  },
+}
