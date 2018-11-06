@@ -85,21 +85,18 @@ export class OverlayView extends React.PureComponent {
       `OverlayView requires either props.mapPaneName or props.defaultMapPaneName but got %s`,
       mapPaneName
     )
-    // https://developers.google.com/maps/documentation/javascript/3.exp/reference#MapPanes
-    const mapPanes = this.state[OVERLAY_VIEW].getPanes()
-    mapPanes[mapPaneName].appendChild(this.containerElement)
+    const overlayView = this.state[OVERLAY_VIEW]
 
-    if (React.version.match(/^16/)) {
-      this.onPositionElement()
-      this.forceUpdate()
-    } else {
-      ReactDOM.unstable_renderSubtreeIntoContainer(
-        this,
-        React.Children.only(this.props.children),
-        this.containerElement,
-        this.onPositionElement
-      )
+    if (!overlayView) {
+      return
     }
+
+    // https://developers.google.com/maps/documentation/javascript/3.exp/reference#MapPanes
+    const mapPanes = overlayView.getPanes()
+
+    mapPanes[mapPaneName].appendChild(this.containerElement)
+    this.onPositionElement()
+    this.forceUpdate()
   }
 
   onPositionElement() {
